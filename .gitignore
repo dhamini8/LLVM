@@ -1,0 +1,36 @@
+# Create .gitignore file
+cat > .gitignore << 'EOF'
+# Generated files that can be recreated
+*.dot
+*.o
+*.out
+
+# macOS system files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build artifacts
+build/
+dist/
+
+# Optional: Include generated files for demonstration
+# Comment out these lines if you want to include the generated images
+# *.ll
+# *_cfg.png
+EOF
