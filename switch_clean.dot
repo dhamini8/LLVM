@@ -1,0 +1,33 @@
+digraph "CFG for 'choose' function" {
+	label="Control Flow Graph for function: choose";
+	node [fontname="Arial", fontsize=12];
+	edge [fontname="Arial", fontsize=10];
+	
+	// Entry and switch block
+	entry [shape=box, style="filled", fillcolor="lightblue", 
+	       label="entry:\nstore x\nload x\nswitch x"];
+	
+	// Case 1 branch
+	case1 [shape=box, style="filled", fillcolor="lightgreen",
+	       label="%5:\nstore 100\nbr %8"];
+	
+	// Case 2 branch  
+	case2 [shape=box, style="filled", fillcolor="lightcyan",
+	       label="%6:\nstore 200\nbr %8"];
+	
+	// Default branch
+	default_case [shape=box, style="filled", fillcolor="lightcoral",
+	              label="%7:\nstore -1\nbr %8"];
+	
+	// Exit block
+	exit [shape=box, style="filled", fillcolor="lightyellow",
+	      label="%8:\nload result\nreturn result"];
+	
+	// Control flow edges
+	entry -> case1 [label="case 1"];
+	entry -> case2 [label="case 2"];
+	entry -> default_case [label="default"];
+	case1 -> exit;
+	case2 -> exit;
+	default_case -> exit;
+}

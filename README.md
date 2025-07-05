@@ -1,391 +1,363 @@
-# LLVM IR Control Flow Analysis Project
+# LLVM Control Flow Graph Analysis Project
 
-## 📋 Overview
+This project demonstrates control flow analysis using LLVM IR (Intermediate Representation) for different C++ control structures including conditionals, loops, and switch statements. The project generates both LLVM IR and visual Control Flow Graphs (CFGs) to analyze how high-level code constructs are translated into lower-level representations.
 
-This comprehensive project analyzes how C++ control flow structures (conditionals, loops, switch statements) are represented in LLVM Intermediate Representation (IR). The project demonstrates the compilation process from high-level C++ code to low-level LLVM IR and provides detailed analysis of the resulting control flow patterns.
-
-## 🎯 Learning Objectives
-
-- Understand LLVM IR syntax and semantics
-- Analyze control flow structures at the IR level
-- Learn about basic blocks, branches, and PHI nodes
-- Visualize control flow graphs (CFGs)
-- Compare different control structures in compiled form
-- Master LLVM toolchain usage
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 project/
-├── README.md               # This comprehensive guide
-├── src/                    # C++ source files
-│   ├── condition.cpp      # If/else conditional example
-│   ├── loop.cpp          # For-loop with accumulator
-│   └── switch.cpp        # Multi-case switch statement
-├── ir/                    # Generated LLVM IR files
-│   ├── condition.ll      # IR for conditional logic
-│   ├── loop.ll           # IR for loop structure
-│   └── switch.ll         # IR for switch statement
-├── notes/
-│   └── control-flow.md   # Complete analysis and findings
-├── ._Z15check_conditioni.dot # CFG dot file for conditional function
-├── ._Z3sumi.dot          # CFG dot file for loop function
-├── ._Z6choosei.dot       # CFG dot file for switch function
-├── condition_cfg.png     # Conditional control flow graph
-├── loop_cfg.png          # Loop control flow graph visualization
-└── switch_cfg.png        # Switch control flow graph
+├── README.md                    # This file
+├── src/                        # C++ source files
+│   ├── condition.cpp           # Conditional statement example
+│   ├── loop.cpp               # Loop example
+│   └── switch.cpp             # Switch statement example
+├── ir/                        # Generated LLVM IR files
+│   ├── condition.ll           # LLVM IR for condition.cpp
+│   ├── loop.ll               # LLVM IR for loop.cpp
+│   └── switch.ll             # LLVM IR for switch.cpp
+├── output/                    # Generated output files (images, graphs)
+│   ├── condition_cfg.png     # Raw CFG for condition function
+│   ├── condition_clean_cfg.png # Cleaned CFG for condition function
+│   ├── sum_cfg.png           # Raw CFG for sum function
+│   ├── sum_clean_cfg.png     # Cleaned CFG for sum function
+│   ├── switch_cfg.png        # Raw CFG for switch function
+│   └── switch_clean_cfg.png  # Cleaned CFG for switch function
+├── notes/                     # Analysis documentation
+│   ├── cfg-analysis.md       # Detailed CFG analysis
+│   └── control-flow.md       # Control flow documentation
+├── condition_clean.dot        # DOT file for condition CFG
+├── sum_clean.dot             # DOT file for sum CFG
+└── switch_clean.dot          # DOT file for switch CFG
 ```
 
-## 🔧 Prerequisites
+## Prerequisites
 
-### System Requirements
-- **Operating System**: macOS 10.15+, Ubuntu 18.04+, or Windows 10+ (with WSL2)
-- **Architecture**: x86_64 or ARM64 (Apple Silicon supported)
-- **Memory**: Minimum 4GB RAM recommended
-- **Storage**: At least 2GB free space for LLVM installation
-
-### Required Software
-
-#### 1. LLVM Toolchain
-The LLVM toolchain provides the core compilation and analysis tools:
-
-**Components needed:**
-- `clang++`: C++ compiler with LLVM backend
-- `opt`: LLVM optimizer and IR analysis tool
-- `llvm-dis`: LLVM disassembler (automatically included)
-- `llc`: LLVM static compiler (optional)
-
-**Version Requirements:**
-- LLVM 12.0 or newer (recommended: LLVM 15+)
-- Compatible with C++17 standard
-
-#### 2. Graphviz
-Required for generating visual control flow graphs:
-- `dot`: Graph rendering engine
-- Support for PNG/SVG output formats
-
-#### 3. Development Tools
-- **Text Editor/IDE**: VS Code, Vim, Emacs, or any editor with syntax highlighting
-- **Terminal/Shell**: Bash, Zsh, or PowerShell
-- **Git** (optional): For version control
-
-### Optional Tools
-- **Image Viewer**: For viewing generated CFG images
-- **PDF Viewer**: If generating PDF documentation
-- **Hex Editor**: For low-level IR analysis (advanced users)
-
-## 🚀 Installation Guide
+Before working with this project, ensure you have the following installed:
 
 ### macOS Installation
 
-#### Method 1: Homebrew (Recommended)
+1. **Install Homebrew** (if not already installed):
+   ```bash
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+
+2. **Install LLVM/Clang**:
+   ```bash
+   brew install llvm
+   ```
+
+3. **Install Graphviz** (for CFG visualization):
+   ```bash
+   brew install graphviz
+   ```
+
+4. **Add LLVM to PATH** (add to your `~/.zshrc`):
+   ```bash
+   echo 'export PATH="/opt/homebrew/opt/llvm/bin:$PATH"' >> ~/.zshrc
+   source ~/.zshrc
+   ```
+
+### Verify Installation
+
 ```bash
-# Install Homebrew if not already installed
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Install LLVM and Graphviz
-brew install llvm graphviz
-
-# Add LLVM to PATH (add to ~/.zshrc or ~/.bash_profile)
-export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
-
-# For Intel Macs, use:
-# export PATH="/usr/local/opt/llvm/bin:$PATH"
-
-# Reload shell configuration
-source ~/.zshrc  # or source ~/.bash_profile
-```
-
-#### Method 2: Xcode Command Line Tools + Manual Install
-```bash
-# Install Xcode Command Line Tools
-xcode-select --install
-
-# Download LLVM from official website
-# Follow manual installation instructions
-```
-
-### Ubuntu/Debian Installation
-```bash
-# Update package manager
-sudo apt update
-
-# Install LLVM and tools
-sudo apt install -y clang llvm llvm-dev graphviz
-
-# Install specific version (if needed)
-sudo apt install -y clang-15 llvm-15 llvm-15-dev
-
-# Verify installation
+# Check clang version
 clang++ --version
+
+# Check LLVM tools
 opt --version
-dot -V
-```
-
-### Windows Installation (WSL2 Recommended)
-```bash
-# Install WSL2 with Ubuntu
-# Then follow Ubuntu installation steps above
-
-# Alternative: Use Visual Studio with Clang/LLVM
-# Download LLVM for Windows from official site
-```
-
-## ✅ Verification
-
-**Step 1: Set up LLVM PATH (Critical for Homebrew installations)**
-```bash
-# Add LLVM to your current session PATH
-export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
-
-# Make it permanent by adding to shell configuration
-echo 'export PATH="/opt/homebrew/opt/llvm/bin:$PATH"' >> ~/.zshrc
-
-# Reload your shell configuration
-source ~/.zshrc
-
-# For Intel Macs, use this path instead:
-# export PATH="/usr/local/opt/llvm/bin:$PATH"
-# echo 'export PATH="/usr/local/opt/llvm/bin:$PATH"' >> ~/.zshrc
-```
-
-**Step 2: Verify your installation**
-```bash
-# Check clang++ version and target
-clang++ --version
-clang++ -print-targets
-
-# Check opt (LLVM optimizer) - this should work now
-opt --version
-which opt
+llc --version
 
 # Check Graphviz
 dot -V
-
-# Test basic compilation
-echo 'int main() { return 0; }' > test.cpp
-clang++ -S -emit-llvm test.cpp -o test.ll
-cat test.ll
-rm test.cpp test.ll
 ```
 
-Expected output should show:
-- LLVM version 12.0 or higher
-- Graphviz version 2.40 or higher
-- Successful generation of LLVM IR
+## Getting Started
 
-## 🔄 Usage Instructions
+### 1. Clone or Download the Project
 
-### Step 1: Project Setup
 ```bash
-# Clone or download the project
-cd /path/to/project
+# If using git
+git clone <repository-url>
+cd llvm-cfg-analysis
 
-# Verify all source files exist
-ls src/
-# Should show: condition.cpp  loop.cpp  switch.cpp
+# Or create the project structure manually
+mkdir llvm-cfg-analysis
+cd llvm-cfg-analysis
 ```
 
-### Step 2: Compile C++ to LLVM IR
+### 2. Compile C++ to LLVM IR
+
+Generate LLVM IR files from the C++ source code:
+
 ```bash
-# Generate IR for conditional statement
+# Create ir directory if it doesn't exist
+mkdir -p ir
+
+# Compile condition.cpp to LLVM IR
 clang++ -O0 -S -emit-llvm src/condition.cpp -o ir/condition.ll
 
-# Generate IR for loop structure
+# Compile loop.cpp to LLVM IR
 clang++ -O0 -S -emit-llvm src/loop.cpp -o ir/loop.ll
 
-# Generate IR for switch statement
+# Compile switch.cpp to LLVM IR
 clang++ -O0 -S -emit-llvm src/switch.cpp -o ir/switch.ll
-
-# Verify IR files were created
-ls ir/
 ```
 
-**Compilation flags explained:**
-- `-O0`: No optimization (preserves original structure)
-- `-S`: Generate assembly/IR instead of object code
-- `-emit-llvm`: Output LLVM IR instead of target assembly
+**Note**: The `-O0` flag disables optimizations to make the IR more readable and closer to the original source structure.
 
-### Step 3: Generate Control Flow Graphs
+### 3. Generate Control Flow Graphs
+
+Create visual representations of the control flow:
+
 ```bash
-# Generate CFG dot files for all examples
-opt -passes=dot-cfg ir/condition.ll -disable-output  # Creates ._Z15check_conditioni.dot
-opt -passes=dot-cfg ir/loop.ll -disable-output       # Creates ._Z3sumi.dot
-opt -passes=dot-cfg ir/switch.ll -disable-output     # Creates ._Z6choosei.dot
+# Generate CFG from LLVM IR (raw format)
+opt -passes=dot-cfg ir/condition.ll -disable-output
+opt -passes=dot-cfg ir/loop.ll -disable-output
+opt -passes=dot-cfg ir/switch.ll -disable-output
 
-# Convert dot files to PNG images
-dot -Tpng ._Z15check_conditioni.dot -o condition_cfg.png
-dot -Tpng ._Z3sumi.dot -o loop_cfg.png
-dot -Tpng ._Z6choosei.dot -o switch_cfg.png
+# Create output directory if it doesn't exist
+mkdir -p output
 
-# View the generated images
-open condition_cfg.png  # macOS
-open loop_cfg.png       # macOS  
-open switch_cfg.png     # macOS
-# or: xdg-open *.png    # Linux
+# Convert DOT files to PNG images
+dot -Tpng cfg.check_condition.dot -o output/condition_cfg.png
+dot -Tpng cfg._Z3sumi.dot -o output/sum_cfg.png
+dot -Tpng cfg._Z6choosei.dot -o output/switch_cfg.png
+
+# Generate clean/simplified CFG images from custom DOT files
+dot -Tpng condition_clean.dot -o output/condition_clean_cfg.png
+dot -Tpng sum_clean.dot -o output/sum_clean_cfg.png
+dot -Tpng switch_clean.dot -o output/switch_clean_cfg.png
+
+# Clean up temporary DOT files
+rm cfg.*.dot
 ```
 
-**Understanding the generated filenames:**
-- `._Z15check_conditioni.dot` → CFG for `check_condition(int)` function
-- `._Z3sumi.dot` → CFG for `sum(int)` function
-- `._Z6choosei.dot` → CFG for `choose(int)` function
+### 4. View and Analyze Results
 
-The names use C++ name mangling where `_Z` prefix indicates mangled names.
-
-### Step 4: Analysis
 ```bash
-# Examine IR files
+# View the generated LLVM IR
 cat ir/condition.ll
 cat ir/loop.ll
 cat ir/switch.ll
 
-# Read comprehensive analysis
-cat notes/control-flow.md
+# Open CFG images (on macOS)
+open output/condition_cfg.png
+open output/sum_cfg.png
+open output/switch_cfg.png
 
-# Analyze the generated CFG images
-open condition_cfg.png  # Shows diamond pattern for if/else
-open loop_cfg.png       # Shows cyclic pattern with back edge
-open switch_cfg.png     # Shows multi-way branching
+# View clean CFG images
+open output/condition_clean_cfg.png
+open output/sum_clean_cfg.png
+open output/switch_clean_cfg.png
 ```
 
-**CFG Pattern Analysis:**
-- **Conditional CFG** (`condition_cfg.png`): Diamond-shaped control flow
-  - Entry block → Comparison → Two branches → Merge point
-- **Loop CFG** (`loop_cfg.png`): Cyclic control flow
-  - Entry → Loop condition → Body → Increment → Back to condition
-- **Switch CFG** (`switch_cfg.png`): Multi-way branching
-  - Entry → Switch evaluation → Multiple case blocks → Merge point
+## Source Code Examples
 
-## 🔍 What You'll Learn
+### Conditional Example (`src/condition.cpp`)
+```cpp
+int check_condition(int x) {
+    if (x > 5) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+```
 
-### Part 1: Conditional Analysis
-- **icmp instruction**: Integer comparisons in LLVM IR
-- **br instruction**: Conditional and unconditional branching
-- **Basic blocks**: Fundamental units of control flow
-- **Label management**: How LLVM organizes code sections
+### Loop Example (`src/loop.cpp`)
+```cpp
+int sum(int n) {
+    int s = 0;
+    for (int i = 0; i < n; ++i)
+        s += i;
+    return s;
+}
+```
 
-### Part 2: Loop Analysis
-- **Loop structures**: Entry, body, increment, and exit blocks
-- **Memory operations**: Load/store vs. register operations
-- **Loop metadata**: LLVM loop annotations
-- **PHI nodes**: Understanding SSA form (in optimized code)
+### Switch Example (`src/switch.cpp`)
+```cpp
+int choose(int x) {
+  switch (x) {
+    case 1: return 100;
+    case 2: return 200;
+    default: return -1;
+  }
+}
+```
 
-### Part 3: CFG Visualization
-- **Graph structure**: Visual representation of control flow
-- **Back edges**: Identifying loop structures in graphs
-- **Dominance**: Understanding block relationships
-- **Conditional CFG**: Diamond-shaped patterns in if/else structures
-- **Loop CFG**: Cyclic patterns with back edges
-- **Switch CFG**: Multi-way branching patterns
+## Key LLVM IR Concepts Demonstrated
 
-### Bonus: Switch Analysis
-- **Switch instruction**: Multi-way branching in LLVM
-- **Jump tables**: Efficient implementation strategies
-- **Default cases**: Handling unmatched values
+### 1. Conditional Statements
+- **icmp**: Integer comparison instruction (`icmp sgt` for signed greater than)
+- **br**: Conditional and unconditional branching
+- **Basic Blocks**: Separate blocks for if/else branches
 
-## 🛠️ Troubleshooting
+### 2. Loops
+- **PHI nodes**: Handle variable values from different predecessors
+- **Loop structures**: Entry, condition, body, increment, and exit blocks
+- **Back edges**: Branches that create loops in the CFG
+
+### 3. Switch Statements
+- **switch instruction**: Multi-way branching
+- **Jump tables**: Efficient implementation for dense case values
+- **Default cases**: Fallback handling
+
+## Analysis Commands
+
+### Analyze LLVM IR Structure
+```bash
+# Count basic blocks
+grep -c "^[0-9].*:" ir/condition.ll
+
+# Find all branch instructions
+grep "br " ir/loop.ll
+
+# Locate PHI nodes
+grep "phi " ir/loop.ll
+
+# View function signatures
+grep "define " ir/*.ll
+```
+
+### CFG Analysis
+```bash
+# Analyze DOT files
+grep "label=" *.dot
+
+# Count nodes and edges in CFG
+grep -c "node\|edge" condition_clean.dot
+```
+
+## Working with the Project
+
+### Modifying Source Code
+1. Edit files in the `src/` directory
+2. Recompile to LLVM IR using the commands in step 2
+3. Regenerate CFGs using the commands in step 3
+4. Analyze the changes in the generated files
+
+### Adding New Examples
+1. Create new `.cpp` files in `src/`
+2. Follow the compilation process
+3. Update this README with the new examples
+
+### Optimization Analysis
+Compare optimized vs unoptimized IR:
+```bash
+# Generate optimized IR
+clang++ -O2 -S -emit-llvm src/condition.cpp -o ir/condition_opt.ll
+
+# Compare with unoptimized version
+diff ir/condition.ll ir/condition_opt.ll
+```
+
+## Educational Objectives
+
+This project helps understand:
+- How high-level language constructs translate to LLVM IR
+- Control flow representation in compiler intermediate forms
+- Basic block structure and CFG generation
+- The relationship between source code and low-level representations
+- LLVM toolchain usage for code analysis
+
+## Git Workflow
+
+### Repository Setup
+
+The project includes a comprehensive `.gitignore` file that excludes:
+- Generated LLVM IR files (`*.ll`)
+- Generated CFG images (`*.png`, `*.svg`, `*.pdf`)
+- Temporary DOT files from LLVM opt
+- System files and IDE configurations
+- Build artifacts and temporary files
+
+### What to Track in Git
+
+**Included in version control:**
+- Source code files (`src/*.cpp`)
+- Documentation (`notes/*.md`, `README.md`)
+- Clean DOT files (`*_clean.dot`) - manually created for documentation
+- Project configuration files
+
+**Excluded from version control:**
+- Generated IR files - can be recreated with `clang++` commands
+- CFG images - can be regenerated from DOT files
+- Temporary files and build artifacts
+
+### Initial Git Setup
+
+```bash
+# Initialize git repository
+git init
+
+# Add all source files and documentation
+git add src/ notes/ README.md .gitignore *_clean.dot
+
+# Initial commit
+git commit -m "Initial commit: LLVM CFG analysis project"
+
+# Add remote origin (replace with your repository URL)
+git remote add origin <your-repository-url>
+git push -u origin main
+```
+
+### Regular Workflow
+
+```bash
+# After modifying source code
+git add src/
+git commit -m "Update source code examples"
+
+# After updating documentation
+git add notes/ README.md
+git commit -m "Update analysis documentation"
+
+# Push changes
+git push origin main
+```
+
+### Regenerating Project Files
+
+When cloning the repository, regenerate the excluded files:
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd llvm-cfg-analysis
+
+# Regenerate LLVM IR files
+mkdir -p ir
+clang++ -O0 -S -emit-llvm src/condition.cpp -o ir/condition.ll
+clang++ -O0 -S -emit-llvm src/loop.cpp -o ir/loop.ll
+clang++ -O0 -S -emit-llvm src/switch.cpp -o ir/switch.ll
+
+# Regenerate CFG images
+opt -passes=dot-cfg ir/*.ll -disable-output
+mkdir -p output
+dot -Tpng cfg.check_condition.dot -o output/condition_cfg.png
+dot -Tpng cfg._Z3sumi.dot -o output/sum_cfg.png
+dot -Tpng cfg._Z6choosei.dot -o output/switch_cfg.png
+dot -Tpng condition_clean.dot -o output/condition_clean_cfg.png
+dot -Tpng sum_clean.dot -o output/sum_clean_cfg.png
+dot -Tpng switch_clean.dot -o output/switch_clean_cfg.png
+rm cfg.*.dot
+```
+
+## Troubleshooting
 
 ### Common Issues
 
-#### 1. Command Not Found Errors
-```bash
-# If 'opt' not found (most common issue):
-# Step 1: Add LLVM to PATH immediately
-export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+1. **Command not found errors**: Ensure LLVM is properly installed and in PATH
+2. **Permission errors**: Use `chmod +x` on script files if needed
+3. **Missing images**: Ensure Graphviz is installed for DOT file processing
+4. **IR generation fails**: Check that source files are syntactically correct
 
-# Step 2: Test if opt works now
-opt --version
+### Getting Help
 
-# Step 3: Make it permanent
-echo 'export PATH="/opt/homebrew/opt/llvm/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
+- Check LLVM documentation: https://llvm.org/docs/
+- Verify tool versions with `--version` flags
+- Ensure all prerequisites are properly installed
 
-# If 'clang++' not found:
-which clang++
-# If empty, check PATH or reinstall LLVM
+## License
 
-# Verify LLVM installation location:
-brew --prefix llvm
-ls -la $(brew --prefix llvm)/bin/
-```
-
-#### 2. Permission Errors
-```bash
-# Make sure you have write permissions
-chmod 755 /path/to/project
-```
-
-#### 3. Missing Dependencies
-```bash
-# Ubuntu: Install missing packages
-sudo apt install build-essential
-
-# macOS: Install Xcode Command Line Tools
-xcode-select --install
-```
-
-#### 4. CFG Generation Issues
-```bash
-# If opt fails with pass errors:
-opt --help | grep cfg  # Check available passes
-opt -passes=help | grep cfg  # List CFG-related passes
-
-# If dot files are not generated:
-ls -la ._Z*.dot  # Check for generated dot files
-
-# If image conversion fails:
-dot -V  # Verify Graphviz installation
-dot -Tpng ._Z15check_conditioni.dot -v -o condition_cfg.png  # Verbose output
-
-# Alternative image formats:
-dot -Tsvg ._Z15check_conditioni.dot -o condition_cfg.svg  # SVG format
-dot -Tpdf ._Z15check_conditioni.dot -o condition_cfg.pdf  # PDF format
-```
-
-### Advanced Debugging
-```bash
-# Verbose compilation
-clang++ -v -S -emit-llvm src/loop.cpp -o ir/loop.ll
-
-# Check LLVM pass information
-opt -passes=print-cfg ir/loop.ll -disable-output
-
-# Analyze with different optimization levels
-clang++ -O1 -S -emit-llvm src/loop.cpp -o ir/loop_O1.ll
-clang++ -O2 -S -emit-llvm src/loop.cpp -o ir/loop_O2.ll
-```
-
-## 📚 Additional Resources
-
-### Documentation
-- [LLVM Language Reference Manual](https://llvm.org/docs/LangRef.html)
-- [LLVM Programmer's Manual](https://llvm.org/docs/ProgrammersManual.html)
-- [Graphviz Documentation](https://graphviz.org/documentation/)
-
-### Tutorials
-- [LLVM Tutorial: Table of Contents](https://llvm.org/docs/tutorial/)
-- [Getting Started with LLVM Core Libraries](https://llvm.org/docs/GettingStarted.html)
-
-### Community
-- [LLVM Discourse Forum](https://discourse.llvm.org/)
-- [Stack Overflow LLVM Tag](https://stackoverflow.com/questions/tagged/llvm)
-
-## 🤝 Contributing
-
-To extend this project:
-1. Add new C++ examples in `src/`
-2. Update analysis in `notes/control-flow.md`
-3. Generate corresponding IR files
-4. Document findings and patterns
-
-## 📝 License
-
-This educational project is provided for learning purposes. LLVM is distributed under the Apache 2.0 License with LLVM Exceptions.
-
-## 📊 Project Metrics
-
-- **Source Files**: 3 C++ examples
-- **Generated Files**: 3 LLVM IR files + CFG visualization
-- **Documentation**: Comprehensive analysis with code annotations
-- **Complexity**: Beginner to intermediate level
-- **Time Investment**: 2-4 hours for complete analysis
+This project is for educational purposes. Please refer to your institution's guidelines for academic use.

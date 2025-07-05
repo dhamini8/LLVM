@@ -1,9 +1,29 @@
-# Create .gitignore file
-cat > .gitignore << 'EOF'
-# Generated files that can be recreated
-*.dot
+# LLVM Control Flow Graph Analysis Project - .gitignore
+
+# Generated LLVM IR files (can be recreated from source)
+ir/*.ll
+
+# Generated CFG images are now in output/ directory
+# Note: PNG files are included for documentation purposes
+output/*.svg
+output/*.pdf
+
+# Generated DOT files from LLVM opt (temporary)
+cfg.*.dot
+*.cfg.dot
+._Z*.dot
+
+# Compiled binaries and object files
 *.o
 *.out
+*.exe
+*.app
+a.out
+
+# LLVM temporary and intermediate files
+*.bc
+*.s
+*.tmp
 
 # macOS system files
 .DS_Store
@@ -14,23 +34,70 @@ cat > .gitignore << 'EOF'
 ehthumbs.db
 Thumbs.db
 
-# Temporary files
-*.tmp
-*.temp
-*~
-
-# IDE files
+# IDE and editor files
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+.vim/
 
-# Build artifacts
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.bak
+
+# Build directories
 build/
 dist/
+*.dSYM/
 
-# Optional: Include generated files for demonstration
-# Comment out these lines if you want to include the generated images
-# *.ll
-# *_cfg.png
-EOF
+# Xcode files (if using Xcode)
+*.xcodeproj/
+*.xcworkspace/
+DerivedData/
+
+# Package manager files
+node_modules/
+*.tgz
+
+# Environment variables
+.env
+.env.local
+
+# Custom analysis outputs
+analysis_output/
+reports/
+
+# Backup files
+*.backup
+*.orig
+
+# Core dumps
+core
+core.*
+
+# Profiling data
+*.prof
+*.gcda
+*.gcno
+
+# Notes directory (analysis documentation)
+notes/
+
+# Specific analysis files
+control-flow.md
+
+# Keep manually created clean DOT files for documentation
+!*_clean.dot
+
+# Keep source files and documentation
+!src/
+!*.md
+
+# Override: exclude specific markdown files
+control-flow.md
+
+# Keep empty directories with .gitkeep files
+!.gitkeep

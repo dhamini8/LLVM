@@ -1,0 +1,27 @@
+digraph "CFG for 'check_condition' function" {
+	label="Control Flow Graph for function: check_condition";
+	node [fontname="Arial", fontsize=12];
+	edge [fontname="Arial", fontsize=10];
+	
+	// Entry and condition block
+	entry [shape=box, style="filled", fillcolor="lightblue", 
+	       label="entry:\nstore x\nload x\nicmp x > 5\nbr %6 or %7"];
+	
+	// True branch
+	true_branch [shape=box, style="filled", fillcolor="lightgreen",
+	             label="%6:\nstore 1\nbr %8"];
+	
+	// False branch  
+	false_branch [shape=box, style="filled", fillcolor="lightcoral",
+	              label="%7:\nstore 0\nbr %8"];
+	
+	// Exit block
+	exit [shape=box, style="filled", fillcolor="lightyellow",
+	      label="%8:\nload result\nreturn result"];
+	
+	// Control flow edges
+	entry -> true_branch [label="true (x > 5)"];
+	entry -> false_branch [label="false (x <= 5)"];
+	true_branch -> exit;
+	false_branch -> exit;
+}

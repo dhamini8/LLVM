@@ -1,0 +1,32 @@
+digraph "CFG for 'sum' function" {
+	label="Control Flow Graph for function: sum";
+	node [fontname="Arial", fontsize=12];
+	edge [fontname="Arial", fontsize=10];
+	
+	// Entry block
+	entry [shape=box, style="filled", fillcolor="lightblue", 
+	       label="entry:\nstore n, s=0, i=0\nbr %5"];
+	
+	// Loop condition block
+	loop_cond [shape=box, style="filled", fillcolor="lightblue",
+	           label="%5:\nload i, load n\nicmp i < n\nbr %9 or %16"];
+	
+	// Loop body block
+	loop_body [shape=box, style="filled", fillcolor="lightyellow",
+	           label="%9:\nload i, load s\ns += i\nbr %13"];
+	
+	// Loop increment block
+	loop_inc [shape=box, style="filled", fillcolor="lightgray",
+	          label="%13:\ni++\nbr %5"];
+	
+	// Exit block
+	exit [shape=box, style="filled", fillcolor="lightgreen",
+	      label="%16:\nreturn s"];
+	
+	// Control flow edges
+	entry -> loop_cond;
+	loop_cond -> loop_body [label="true"];
+	loop_cond -> exit [label="false"];
+	loop_body -> loop_inc;
+	loop_inc -> loop_cond;
+}
